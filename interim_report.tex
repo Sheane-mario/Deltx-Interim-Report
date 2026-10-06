@@ -19,13 +19,11 @@
 \usepackage{xcolor}
 \usepackage{url}
 \usepackage{xurl}
+% Parenthetical author--year citations; full names in the reference list.
+\usepackage[authoryear,round]{natbib}
+\setcitestyle{authoryear,round,aysep={,},citesep={;}}
 \usepackage[hidelinks]{hyperref}
-% Compatibility with the LaTeX kernel shipped in TeX Live 2023.
-\providecommand{\IfDocumentMetadataT}[1]{\IfDocumentMetadataTF{#1}{}}
-\providecommand{\IfDocumentMetadataF}[1]{\IfDocumentMetadataTF{}{#1}}
-\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
-\addbibresource{references.bib}
-\renewbibmacro*{urldate}{}
+\newcommand{\doi}[1]{doi:\space\href{https://doi.org/#1}{\begingroup\urlstyle{rm}\nolinkurl{#1}\endgroup}}
 \usepackage{fancyhdr}
 
 \geometry{left=1.25in,right=1in,top=1in,bottom=1in}
@@ -76,6 +74,7 @@
 
 \begin{document}
 
+\hypersetup{pageanchor=false}
 \begin{titlepage}
     \centering
     \vspace*{1.2cm}
@@ -106,6 +105,7 @@
 \end{titlepage}
 
 \pagenumbering{roman}
+\hypersetup{pageanchor=true}
 
 \chapter*{List of Acronyms}
 \addcontentsline{toc}{chapter}{List of Acronyms}
@@ -139,7 +139,7 @@ XAI & Explainable Artificial Intelligence \\
 % =============================================================================
 
 \section{Background and Motivation}
-The software engineering landscape is undergoing a major shift driven by the adoption of Large Language Models (LLMs) and AI-assisted programming agents. AI-assisted development can accelerate implementation, but it also changes how software is produced and can introduce structural vulnerabilities, architectural inconsistencies, latent technical debt, and other risks that may only become visible as the codebase evolves. Existing empirical work has reported measurable differences between human-written and AI-generated code in defects, vulnerabilities, and complexity \cite{human_written_vs_ai_generated_code_2025}. At the same time, AI involvement is often not explicitly declared in real repositories, which makes it difficult to study its longitudinal effect on software quality \cite{developers_self_declaration_ai_generated_code}.
+The software engineering landscape is undergoing a major shift driven by the adoption of Large Language Models (LLMs) and AI-assisted programming agents. AI-assisted development can accelerate implementation, but it also changes how software is produced and can introduce structural vulnerabilities, architectural inconsistencies, latent technical debt, and other risks that may only become visible as the codebase evolves. Existing empirical work reports measurable differences between human-written and AI-generated code in defects, vulnerabilities, and complexity \citep{human_written_vs_ai_generated_code_2025}. Limited self-declaration of AI involvement in real repositories makes it difficult to study its longitudinal effect on software quality \citep{developers_self_declaration_ai_generated_code}.
 
 Software quality is described at a high level by standards such as ISO/IEC 25010, while static-analysis platforms such as SonarQube provide operational measurements and rule violations. However, static analysis is fundamentally retrospective: it reports the current condition of a codebase rather than predicting how software quality may evolve in future commits.
 
@@ -149,13 +149,13 @@ Software quality is described at a high level by standards such as ISO/IEC 25010
 Current static-analysis tools process source code without distinguishing human-authored code from AI-generated code. AI-generated code can be functionally correct in isolation while introducing structural problems when integrated into a larger codebase. Without an authorship signal, organizations cannot separately observe the evolution of AI-assisted code or study whether changes in AI-authorship are associated with later quality degradation.
 
 \subsection{Issue 2: Semantic Gap in Software Quality Metrics}
-SonarQube produces granular rule violations and structural measurements, but there is a semantic gap between these low-level outputs and higher-level software-quality dimensions such as Correctness, Maintainability, Security, and Efficiency. Simple counting or arithmetic aggregation can also mask severe problems when many less important observations are present. SQUALE-style nonlinear aggregation is used in \systemname{} to address this conflict-resistance requirement \cite{squale_model_practice_based_industrial_quality_model,software_quality_metrics_aggregation_industry}.
+SonarQube produces granular rule violations and structural measurements, but there is a semantic gap between these low-level outputs and higher-level software-quality dimensions such as Correctness, Maintainability, Security, and Efficiency. Simple counting or arithmetic aggregation can also mask severe problems when many less important observations are present. \systemname{} uses SQUALE-style nonlinear aggregation to address this conflict-resistance requirement \citep{squale_model_practice_based_industrial_quality_model,software_quality_metrics_aggregation_industry}.
 
 \subsection{Issue 3: Retrospective Nature of Static Analysis}
 Static-analysis platforms provide point-in-time snapshots but do not directly forecast how quality will evolve across future commits. This leaves software teams in a reactive position, where degradation is addressed only after it has already appeared. \systemname{} addresses this by constructing chronological repository-quality histories that can be used for multivariate time-series forecasting.
 
 \subsection{Issue 4: Lack of Interpretability in Predictive Metrics}
-Predictive models can be difficult for developers to trust when they provide only numerical forecasts. If the system predicts a future decline in Maintainability, Correctness, Security, or Efficiency, developers need an explanation of which historical variables and time periods influenced that forecast. The planned interpretation layer therefore uses SHAP-based feature attribution \cite{perspective_on_xai_methods_shap_and_lime}.
+Predictive models can be difficult for developers to trust when they provide only numerical forecasts. If the system predicts a future decline in Maintainability, Correctness, Security, or Efficiency, developers need an explanation of which historical variables and time periods influenced that forecast. The planned interpretation layer therefore uses SHAP-based feature attribution \citep{perspective_on_xai_methods_shap_and_lime}.
 
 \section{Scope}
 The project scope is intentionally restricted to Python repositories. The current research pipeline consists of five stages: repository-history extraction, AI-authorship detection, SQUALE-based quality aggregation, multivariate time-series forecasting, and SHAP-based interpretation. The first three stages are implemented. Forecasting experiments have begun using datasets extracted from multiple repositories, while the final interpretation layer remains planned.
@@ -195,7 +195,7 @@ The theoretical foundation is organized around four domains: AI-generated code d
 \section{AI-Generated Text and Code Detection}
 The growing use of LLMs has motivated methods for distinguishing synthetic content from human authorship. Earlier approaches often depended on perplexity, token likelihoods, or related statistical signatures.
 
-The project uses the published DroidDetect-Base-Binary checkpoint from the Droid resource suite \cite{orel2025droid}. The detector is fine-tuned from ModernBERT-base and covers Python among its supported languages. The binary head separates human-generated and machine-generated code, where the machine-generated class includes generated, refined, and adversarial examples. \systemname{} does not train a new detector; it uses the published detector as an authorship signal and aggregates file-level outputs into a commit-level score.
+The project uses the published DroidDetect-Base-Binary checkpoint from the Droid resource suite \citep{orel2025droid}. The detector is fine-tuned from ModernBERT-base and covers Python among its supported languages. The binary head separates human-generated and machine-generated code, where the machine-generated class includes generated, refined, and adversarial examples. \systemname{} does not train a new detector; it uses the published detector as an authorship signal and aggregates file-level outputs into a commit-level score.
 
 The current score is
 \begin{equation}
@@ -204,17 +204,17 @@ The current score is
 The detector output is treated as an ordinal confidence signal rather than a calibrated probability. The implementation also preserves full-file context where possible because fragment-level evaluation was observed to produce substantially higher false-positive behavior in local verification.
 
 \section{Hierarchical Software Quality Models}
-ISO/IEC 25010 provides a high-level vocabulary for software quality, but operational tools produce low-level measurements and rule violations. Bridging this abstraction gap is a long-standing software-engineering problem. The Quamoco approach formalized mappings between concrete measurements and quality factors \cite{quamoco_product_quality_modelling_assessment}. SQUALE introduced a practice-based quality model that normalizes heterogeneous observations into marks and aggregates them using nonlinear functions that give greater influence to poor values \cite{squale_model_practice_based_industrial_quality_model,software_quality_metrics_aggregation_industry}.
+ISO/IEC 25010 provides a high-level vocabulary for software quality, but operational tools produce low-level measurements and rule violations. Bridging this abstraction gap is a long-standing software-engineering problem. The Quamoco approach formalized mappings between concrete measurements and quality factors \citep{quamoco_product_quality_modelling_assessment}. SQUALE provides a practice-based quality model that normalizes heterogeneous observations into marks and aggregates them using nonlinear functions that give greater influence to poor values \citep{squale_model_practice_based_industrial_quality_model,software_quality_metrics_aggregation_industry}.
 
 These quality models inform the scoring methodology. \systemname{} uses SonarQube as the measurement instrument and SQUALE-inspired nonlinear aggregation as the mechanism for converting granular findings into four continuous target scores. Current SonarQube MQR findings can carry separate Maintainability, Reliability, and Security impacts, and the implemented scoring model preserves those multi-impact semantics rather than collapsing an issue to a single legacy type.
 
 \section{Predictive Time-Series Modeling}
-Historical software-quality measurements can support fault prediction and quality forecasting \cite{fault_prediction_software_metrics_sonarqube_rules,software_service_supporting_software_quality_forecasting}. Relevant model families include LSTM and GRU recurrent networks \cite{chung2014gated_recurrent_networks}, LTSF-Linear models \cite{zeng2023ltsf_linear}, and patch-based architectures such as PatchMLP \cite{tang2024patchmlp} and PatchTST \cite{nie2023patchtst}.
+Historical software-quality measurements support fault prediction and quality forecasting \citep{fault_prediction_software_metrics_sonarqube_rules,software_service_supporting_software_quality_forecasting}. Relevant candidates include LSTM and GRU networks \citep{chung2014gated_recurrent_networks}, LTSF-Linear models \citep{zeng2023ltsf_linear}, PatchMLP \citep{tang2024patchmlp}, and PatchTST \citep{nie2023patchtst}.
 
 \systemname{} will compare these candidates using repository histories containing the four quality scores alongside AI-authorship, churn, structural, and static-analysis features. The final model will be selected according to MAE and RMSE on validation data, with separate evaluation of its ability to generalize to unseen repositories.
 
 \section{Explainable Artificial Intelligence}
-The final research component is explainability. SHAP uses Shapley-value principles to quantify the contribution of input variables to a model prediction \cite{perspective_on_xai_methods_shap_and_lime}. Within \systemname{}, SHAP is intended to explain the forecasting model rather than source-code semantics directly. A predicted decline can therefore be traced to historical channels such as changes in quality scores, AI confidence, churn, centrality, issue densities, complexity, or duplication.
+The final research component is explainability. SHAP uses Shapley-value principles to quantify the contribution of input variables to a model prediction \citep{perspective_on_xai_methods_shap_and_lime}. Within \systemname{}, SHAP is intended to explain the forecasting model rather than source-code semantics directly. A predicted decline can therefore be traced to historical channels such as changes in quality scores, AI confidence, churn, centrality, issue densities, complexity, or duplication.
 
 % =============================================================================
 \chapter{Research Objectives / Questions}
@@ -242,7 +242,7 @@ The final research component is explainability. SHAP uses Shapley-value principl
 % =============================================================================
 
 \section{System Architecture Overview}
-\systemname{} is implemented as a multi-stage Python pipeline over repository history and a local Dockerized SonarQube installation. The stages are intentionally decoupled so that authorship detection, extraction, scoring, forecasting, and interpretation can be tested independently.
+\systemname{} is designed to study how AI-assisted development relates to changes in software quality over time in Python projects. The work is divided into five stages that can be assessed separately and together.
 
 \begin{enumerate}[leftmargin=*]
     \item Extract meaningful Python checkpoints and repository-evolution features.
@@ -264,12 +264,11 @@ Checkpoint selection uses abstract syntax tree (AST) comparison to distinguish c
     \item pure Python-file renames whose normalized program contents are unchanged; and
     \item other changes whose normalized Python syntax is semantically unchanged under the AST-based comparison.
 \end{itemize}
-Commits are retained when they introduce changes to executable program structure, including changes to a single line, additions or deletions of Python files, and renames accompanied by substantive code changes. When historical Python source cannot be parsed, conservative token-based comparison is used to reduce the risk of excluding relevant changes. This selection strategy focuses the longitudinal dataset on meaningful software evolution events.
 
 The selected repository states are examined as historical snapshots. For each checkpoint, code churn is measured from Python lines added and deleted relative to the first parent. Structural impact is represented by an import-dependency graph, in which nodes correspond to Python files and edges represent imports within the repository. PageRank provides a centrality measure that is included as a dataset feature and used to account for the structural importance of affected files during issue weighting.
 
 \section{AI Authorship Detection Methodology}
-The current implementation uses DroidDetect-Base-Binary \cite{orel2025droid}. For each non-root checkpoint, Deltx compares the commit with its \textbf{first parent} and scopes authorship detection to the \textbf{new Python code introduced by that commit}. Unchanged pre-existing code is excluded from this authorship measurement, and deleted code has no current content to classify. This makes \code{ai\_confidence\_pct} an authorship signal for the code being introduced at that evolution step rather than a score for the entire repository state.
+The current implementation uses DroidDetect-Base-Binary from the Droid resource suite \citep{orel2025droid}. For each non-root checkpoint, Deltx compares the commit with its \textbf{first parent} and scopes authorship detection to the \textbf{new Python code introduced by that commit}. Unchanged pre-existing code is excluded from this authorship measurement, and deleted code has no current content to classify. This makes \code{ai\_confidence\_pct} an authorship signal for the code being introduced at that evolution step rather than a score for the entire repository state.
 
 The rationale for this scope is that integrating newly written code into an existing repository does not change whether that code was human- or AI-authored. AI authorship is therefore measured on the newly introduced code itself. The resulting code-level probabilities are aggregated using a code-line-weighted average to obtain the commit-level \code{ai\_confidence\_pct} in the range 0--100, which occupies numeric feature index~4.
 
@@ -600,7 +599,11 @@ This appendix presents the available one-step-ahead ARIMA forecast outputs for \
 \end{figure}
 
 \clearpage
-\printbibliography[heading=bibintoc,title={References}]
+\phantomsection
+\addcontentsline{toc}{chapter}{References}
+\renewcommand{\bibname}{References}
+\bibliographystyle{plainnat}
+\bibliography{references}
 
 
 

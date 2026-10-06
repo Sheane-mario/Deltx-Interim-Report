@@ -43,4 +43,4 @@
 \contentsline {section}{\numberline {6.5}Explainability and Practical Usefulness}{23}{section.6.5}%
 \contentsline {chapter}{\numberline {A}Repository-Level Exploratory Visualizations}{24}{appendix.A}%
 \contentsline {chapter}{\numberline {B}ARIMA Maintainability Forecast Outputs}{37}{appendix.B}%
-\contentsline {chapter}{References}{44}{appendix*.23}%
+\contentsline {chapter}{References}{44}{section*.23}%

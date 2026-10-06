@@ -1,15 +1,46 @@
-[0] Config.pm:329> INFO - This is Biber 2.22
-[0] Config.pm:332> INFO - Logfile is 'interim_report.blg'
-[30] biber:342> INFO - === Tue Oct  6, 2026, 16:14:35
-[37] Biber.pm:421> INFO - Reading 'interim_report.bcf'
-[77] Biber.pm:1002> INFO - Found 13 citekeys in bib section 0
-[85] Biber.pm:4487> INFO - Processing section 0
-[90] Biber.pm:4680> INFO - Looking for bibtex file 'references.bib' for section 0
-[91] bibtex.pm:1713> INFO - LaTeX decoding ...
-[107] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[141] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[142] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[142] Biber.pm:4307> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'en-US'
-[142] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
-[148] bbl.pm:676> INFO - Writing 'interim_report.bbl' with encoding 'UTF-8'
-[150] bbl.pm:779> INFO - Output to interim_report.bbl
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: interim_report.aux
+The style file: plainnat.bst
+Database file #1: references.bib
+You've used 13 entries,
+            2773 wiz_defined-function locations,
+            681 strings with 8966 characters,
+and the built_in function-call counts, 7768 in all, are:
+= -- 692
+> -- 588
+< -- 4
++ -- 196
+- -- 183
+* -- 673
+:= -- 1194
+add.period$ -- 59
+call.type$ -- 13
+change.case$ -- 100
+chr.to.int$ -- 13
+cite$ -- 26
+duplicate$ -- 282
+empty$ -- 531
+format.name$ -- 198
+if$ -- 1635
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 6
+newline$ -- 90
+num.names$ -- 52
+pop$ -- 210
+preamble$ -- 1
+purify$ -- 87
+quote$ -- 0
+skip$ -- 266
+stack$ -- 0
+substring$ -- 214
+swap$ -- 50
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 143
+warning$ -- 0
+while$ -- 52
+width$ -- 0
+write$ -- 205
